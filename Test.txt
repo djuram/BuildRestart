@@ -1,0 +1,22 @@
+			    foreach (var appPoolName in config.ParseAppPoolNames())
+			    {
+			        var serverManager = new ServerManager();
+			        var appPool = serverManager.ApplicationPools[appPoolName];
+			        var trackInfo = new TrackInfo(appPool, config.RestartAppPool);
+			        if (!m_StopedAppPool.Contains(trackInfo))
+			            m_StopedAppPool.Add(trackInfo);
+
+                    		if (appPool != null)
+			        {
+			            if (appPool.State == ObjectState.Started)
+			                appPool.Stop();
+			            m_StopedAppPool.Add(trackInfo);
+			        }
+			    }
+
+
+			   foreach (var pool in m_StopedAppPool)
+			   {
+			        if (pool.Restart)
+			            pool.ApplicationPool.Start();
+			   }
